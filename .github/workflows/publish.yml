@@ -70,7 +70,6 @@ jobs:
             $release = $releaseJson | ConvertFrom-Json
             $requiredAssets = @(
               'Bewerbungsbogen-Setup.exe',
-              'Bewerbungsbogen-Setup.exe.blockmap',
               'latest.yml'
             )
             $healthy = $true
@@ -181,9 +180,13 @@ jobs:
           "@
           $assets = @(
             'release-public/Bewerbungsbogen-Setup.exe',
-            'release-public/Bewerbungsbogen-Setup.exe.blockmap',
             'release-public/latest.yml'
           )
+          # Keine Blockmap veröffentlichen: Auch ein lange offline gewesener
+          # Client mit electron-updater 6.8.11 fällt dadurch sicher auf den
+          # vollständigen, SHA-512-geprüften Installer zurück. Ohne Telemetrie
+          # lässt sich nicht garantieren, dass jedes Gerät das Brückenupdate
+          # bereits installiert hat.
           if ($env:RELEASE_EXISTS -eq 'true') {
             & gh release upload $env:RELEASE_TAG @assets `
               --repo $env:GITHUB_REPOSITORY `
