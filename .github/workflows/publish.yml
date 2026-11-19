@@ -2,7 +2,10 @@ name: Öffentlichen Bewerbungsbogen veröffentlichen
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # GitHub Actions erlaubt bei Zeitplänen minimal fünf Minuten. Dadurch wird
+    # jeder neue Stand von `main` automatisch als geprüftes Update gebaut,
+    # ohne dass auf den Mitarbeiter-PCs Git oder Repository-Zugriff nötig ist.
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -10,7 +13,7 @@ permissions:
 
 concurrency:
   group: public-bewerbungsbogen-release
-  # Ein Windows-Build kann länger als das 15-Minuten-Prüfintervall dauern.
+  # Ein Windows-Build kann länger als das 5-Minuten-Prüfintervall dauern.
   # Neue Läufe warten deshalb, statt einen fast fertigen Release abzubrechen.
   cancel-in-progress: false
 
@@ -249,7 +252,7 @@ jobs:
         working-directory: source
         run: |
           # Ältere Quellstände ohne Linux-Konfiguration werden still
-          # übersprungen, statt alle 15 Minuten einen Fehler zu melden.
+          # übersprungen, statt alle 5 Minuten einen Fehler zu melden.
           if [ -f electron-builder.linux.mjs ]; then
             echo 'supported=true' >> "$GITHUB_OUTPUT"
           else
